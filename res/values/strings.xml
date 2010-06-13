@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">DiveDroid</string>
+<string name="collection_list">Dive Collection List</string>
+<string name="dive_profile">Dive Profile</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:smoothScrollbar="true"  
+    	android:layout_width="fill_parent" 
+    	android:layout_height="fill_parent">
+ 
+	<com.google.android.maps.MapView 
+       	android:id="@+id/mapView"
+       	android:layout_width="fill_parent"
+       	android:layout_height="200dp"
+       	android:enabled="true"
+       	android:clickable="true"
+       	android:apiKey="03g51D-zCFK8T0NJbgbPjwS60qcCwSPYdetU0hQ"         
+    />
+    <!-- The following key is for the signed application! The key above is the debugging key -->
+    <!-- android:apiKey="03g51D-zCFK92E7pY1qnsaLuFZcDREWtvTzKBaw"-->
+ 
+        
+	<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/collectionList"
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:paddingTop="205dp"
+    	android:layout_height="wrap_content"
+    />
+ 
+</RelativeLayout>

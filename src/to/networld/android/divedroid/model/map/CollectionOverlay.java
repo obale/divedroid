@@ -8,6 +8,7 @@ import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
 /**
+ * Overlay that shows the dive collection on a google map.
  * 
  * @author Alex Oberhauser
  *

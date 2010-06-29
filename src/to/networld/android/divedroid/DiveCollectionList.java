@@ -73,7 +73,7 @@ public class DiveCollectionList extends MapActivity {
 			int count = 0;
 			for (Dive dive : dives) {
 				if ( dive.getName() != null )
-					items[count] = dive.getName();
+					items[count] = dive.getName() + "\n- " + dive.getActivity() + " -";
 				count++;
 			}
 			builder.setItems(items, new DialogInterface.OnClickListener() {

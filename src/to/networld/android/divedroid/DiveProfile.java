@@ -8,15 +8,12 @@ import java.util.Vector;
 import org.dom4j.DocumentException;
 
 import to.networld.android.divedroid.R;
+import to.networld.android.divedroid.model.ImageHelper;
 import to.networld.android.divedroid.model.rdf.Buddy;
 import to.networld.android.divedroid.model.rdf.Dive;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -163,17 +160,15 @@ public class DiveProfile extends TabActivity {
 			e.printStackTrace();
 		}
 		
-		/**
-		 * TODO: Copy this code in a separate class.
-		 */
-		Bitmap orgBmp = BitmapFactory.decodeFile(dive.getGeoImage());
-		Matrix matrix = new Matrix();
-		matrix.postRotate(90);
-		Bitmap resizedBitmap = Bitmap.createBitmap(orgBmp, 0, 0, orgBmp.getWidth(), orgBmp.getHeight(), matrix, true);
-		BitmapDrawable geoPic = new BitmapDrawable(resizedBitmap);
-		
 		ImageView geoPicView = (ImageView)findViewById(R.id.geoPicture);
-		geoPicView.setImageDrawable(geoPic);
+		geoPicView.setImageDrawable(ImageHelper.rotateImage(dive.getGeoImage()));
 		geoPicView.setScaleType(ScaleType.CENTER_INSIDE);
+		
+		/**
+		 * TODO: Implement here a statistic of the dive (read out from a dive computer)
+		 *       x-values ... the time
+		 *       y-values ... the deep
+		 */
+		//FrameLayout layout = (FrameLayout)findViewById(R.id.stat);
 	}
 }

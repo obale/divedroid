@@ -46,9 +46,7 @@ public class DiveDroid extends Activity {
 		ArrayList<HashMap<String, String>> buttonList = new ArrayList<HashMap<String, String>>();
 		
 		HashMap<String, String> map = new HashMap<String, String>();
-		//map.put("icon", R.drawable.logbook + "");
 		map.put("top", "Show Logbook");
-		//map.put("bottom", "Shows your scuba dive collections in a list.");
 		buttonList.add(map);
 
 		SimpleAdapter adapterMainList = new SimpleAdapter(this, buttonList, 

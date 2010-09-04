@@ -43,8 +43,9 @@ public class DiveCollectionHandler extends RDFParser {
 			
 			List<Element> dives = this.getLinkNodes("/rdf:RDF/dive:DiveCollection/dive:dive", this.namespace);
 			for ( Element dive : dives ) {
-				Dive diveObj = new Dive(new File(filepath), dive.valueOf("@resource").replace("#", ""));
-				diveCollection.addDive(diveObj);
+				Dive diveObj = new Dive(new File(filepath), dive.valueOf("@rdf:resource").replace("#", ""));
+				if ( diveObj != null )
+					diveCollection.addDive(diveObj);
 			}
 			
 			this.collections.add(diveCollection);

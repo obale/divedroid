@@ -128,11 +128,17 @@ public class DiveProfile extends TabActivity {
 			map.put(BOTTOM, this.dive.getEntranceType());
 			this.infoList.add(map);
 			
-			map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.comment_icon + "");
-			map.put(TOP, COMMENT);
-			map.put(BOTTOM, this.dive.getComment().substring(0, 30) + "...");
-			this.infoList.add(map);
+			String comment = this.dive.getComment();
+			if ( comment != null ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.comment_icon + "");
+				map.put(TOP, COMMENT);
+				if ( comment.length() <= 30 )
+					map.put(BOTTOM, comment);
+				else 
+					map.put(BOTTOM, comment.substring(0, 30) + "...");
+				this.infoList.add(map);
+			}
 			
 			Vector<Buddy> buddies =  this.dive.getBuddies();
 			for ( Buddy buddy : buddies ) {
@@ -160,9 +166,14 @@ public class DiveProfile extends TabActivity {
 			e.printStackTrace();
 		}
 		
-		ImageView geoPicView = (ImageView)findViewById(R.id.geoPicture);
-		geoPicView.setImageDrawable(ImageHelper.rotateImage(dive.getGeoImage()));
-		geoPicView.setScaleType(ScaleType.CENTER_INSIDE);
+		String image = dive.getGeoImage();
+		if ( image != null ) {
+			try {
+				ImageView geoPicView = (ImageView)findViewById(R.id.geoPicture);
+				geoPicView.setImageDrawable(ImageHelper.rotateImage(image));
+				geoPicView.setScaleType(ScaleType.CENTER_INSIDE);
+			} catch (NullPointerException e) { }
+		}
 		
 		/**
 		 * TODO: Implement here a statistic of the dive (read out from a dive computer)

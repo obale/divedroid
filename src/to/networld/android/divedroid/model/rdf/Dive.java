@@ -14,6 +14,7 @@ import org.dom4j.Element;
  */
 public class Dive extends RDFParser {
 	private String filename = null;
+	private String path = null;
 	private String nodeid = null;
 	private int id = -1;
 	private String name = null;
@@ -21,12 +22,13 @@ public class Dive extends RDFParser {
 	public Dive(File _file, String _nodeID) throws DocumentException {
 		super();
 		this.filename = _file.getAbsolutePath();
+		this.path = _file.getParent() + "/";
 		this.nodeid = _nodeID;
 		this.document = this.reader.read(_file);
 		this.namespace.put("dive", "http://scubadive.networld.to/dive.rdf#");
 		this.namespace.put("foaf", "http://xmlns.com/foaf/0.1/");
 		this.namespace.put("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
-		this.queryPrefix = "/rdf:RDF/dive:Dive[@ID='" + _nodeID + "']";
+		this.queryPrefix = "/rdf:RDF/dive:Dive[@rdf:ID='" + _nodeID + "']";
 		this.setID();
 		this.setName();
 	}
@@ -59,13 +61,20 @@ public class Dive extends RDFParser {
 	public String getBottomTime() { return this.getSingleNode("dive:bottomtime"); }
 	public String getLatitude() { return this.getSingleNode("/geo:lat"); }
 	public String getLongitude() { return this.getSingleNode("/geo:long"); }
-	public String getGeoImage() { return this.getSingleResourceNode("geo:image", "resource"); }
+	
+	public String getGeoImage() {
+		String geoImage = this.getSingleResourceNode("geo:image", "rdf:resource");
+		if ( geoImage.startsWith("/"))
+			return geoImage;
+		else
+			return this.path + geoImage;
+	}
 	
 	public Vector<Buddy> getBuddies() {
 		Vector<Buddy> buddies = new Vector<Buddy>();
 		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/dive:partner", this.namespace);
 		for ( Element entry : nodeList ) {
-			String buddyURI = entry.valueOf("@resource");
+			String buddyURI = entry.valueOf("@rdf:resource");
 			try {
 				Buddy buddy = new Buddy(new File(this.filename), buddyURI.replace("#", ""));
 				buddies.add(buddy);

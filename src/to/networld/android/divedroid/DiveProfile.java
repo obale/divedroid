@@ -28,7 +28,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView.ScaleType;
 
 /**
- * TODO: Maybe useful to split the informations into tabs and visualize the data in graphs (if possible).
+ * TODO: Visualize the detailed dive profile in a graph...
  * 
  * @author Alex Oberhauser
  *
@@ -42,6 +42,9 @@ public class DiveProfile extends TabActivity {
 	
 	private static final String COMMENT = "Comment";
 	private static final String EXPOSURE_TYPE = "Exposure Protection Type";
+	private static final String LOCATION = "Location";
+	private static final String COUNTRY = "Country";
+	private static final String BUDDY = "Buddy";
 	private static final String DIVE_DATE = "Dive Date";
 	private static final String ENTRANCE_TYPE = "Entrance Type";
 	private static final String TIME_DEEP = "Bottom Time and Max Deep";
@@ -50,18 +53,24 @@ public class DiveProfile extends TabActivity {
 	
 	private OnItemClickListener listClickListener = new OnItemClickListener() {
 		@Override
-		public void onItemClick(AdapterView<?> list, View view, int position, long id) {	
-			switch (position) {
-				case 3: // Location
+		public void onItemClick(AdapterView<?> list, View view, int position, long id) {
+			HashMap<String, String> entry = infoList.get(position);
+
+			if ( entry.get(TOP).startsWith(LOCATION) ) {
 					final Intent mapIntent = new Intent(
 							android.content.Intent.ACTION_VIEW, 
 							Uri.parse("geo:" + dive.getLatitude() + "," + dive.getLongitude() + "?z=14"));
 					startActivity(mapIntent);
 					return;
-			}
-			HashMap<String, String> entry = infoList.get(position);
-			if ( entry.get(TOP).equals(COMMENT) )
+			} else if ( entry.get(TOP).startsWith(BUDDY) ) {
+				// TODO: Start here the DiverProfile class with filename and nodeid as parameter.
+				Intent mapIntent = new Intent(DiveProfile.this, DiverProfile.class);
+				mapIntent.putExtra("filename", entry.get("hiddenFilename"));
+				mapIntent.putExtra("nodeid", entry.get("hiddenNodeID"));
+				startActivity(mapIntent);
+			} else if ( entry.get(TOP).equals(COMMENT) ) {
 				Toast.makeText(getApplicationContext(), dive.getComment(), Toast.LENGTH_LONG).show();
+			}
 		}
 	};
 	
@@ -111,8 +120,14 @@ public class DiveProfile extends TabActivity {
 			this.infoList.add(map);
 			
 			map = new HashMap<String, String>();
+			map.put(ICON, R.drawable.world_icon + "");
+			map.put(TOP, COUNTRY);
+			map.put(BOTTOM, this.dive.getCountry());
+			this.infoList.add(map);
+			
+			map = new HashMap<String, String>();
 			map.put(ICON, R.drawable.location_icon + "");
-			map.put(TOP, this.dive.getLocation());
+			map.put(TOP, LOCATION + ": " + this.dive.getLocation());
 			map.put(BOTTOM, "Divesite: " + this.dive.getDivesite());
 			this.infoList.add(map);
 			
@@ -144,7 +159,7 @@ public class DiveProfile extends TabActivity {
 			for ( Buddy buddy : buddies ) {
 				map = new HashMap<String, String>();
 				map.put(ICON, R.drawable.scuba_diver + "");
-				map.put(TOP, buddy.getRole());
+				map.put(TOP, BUDDY + " (Role: " + buddy.getRole() + ")");
 				String buddyCertOrg = buddy.getCertOrg();
 				String bottomString = buddy.getName();
 				if ( buddyCertOrg != null ) {
@@ -155,6 +170,8 @@ public class DiveProfile extends TabActivity {
 					bottomString += ")";
 				}
 				map.put(BOTTOM, bottomString);
+				map.put("hiddenFilename", buddy.getFilename());
+				map.put("hiddenNodeID", buddy.getNodeID());
 				infoList.add(map);
 			}
 			

@@ -30,6 +30,9 @@ public class DiveDroid extends Activity {
 				case 0:
 					showDiveCollection();
 					break;
+				case 1:
+					showDiverInformation();
+					break;
 			}
 		}
 	};
@@ -49,6 +52,10 @@ public class DiveDroid extends Activity {
 		map.put("top", "Show Logbook");
 		buttonList.add(map);
 
+		map = new HashMap<String, String>();
+		map.put("top", "Show Diver Information");
+		buttonList.add(map);
+		
 		SimpleAdapter adapterMainList = new SimpleAdapter(this, buttonList, 
 				R.layout.main_list_entry, new String[]{ "icon", "top", "bottom" },
 				new int[] { R.id.icon, R.id.topText, R.id.bottomText });
@@ -58,5 +65,10 @@ public class DiveDroid extends Activity {
     private void showDiveCollection() {
 		Intent mapIntent = new Intent(DiveDroid.this, DiveCollectionList.class);
 		this.startActivity(mapIntent);
+    }
+    
+    private void showDiverInformation() {
+    	Intent mapIntent = new Intent(DiveDroid.this, DiveCollectionList.class);
+    	this.startActivity(mapIntent);
     }
 }

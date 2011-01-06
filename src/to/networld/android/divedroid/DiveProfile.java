@@ -63,7 +63,6 @@ public class DiveProfile extends TabActivity {
 					startActivity(mapIntent);
 					return;
 			} else if ( entry.get(TOP).startsWith(BUDDY) ) {
-				// TODO: Start here the DiverProfile class with filename and nodeid as parameter.
 				Intent mapIntent = new Intent(DiveProfile.this, DiverProfile.class);
 				mapIntent.putExtra("filename", entry.get("hiddenFilename"));
 				mapIntent.putExtra("nodeid", entry.get("hiddenNodeID"));

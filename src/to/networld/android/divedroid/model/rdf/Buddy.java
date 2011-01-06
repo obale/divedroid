@@ -29,7 +29,7 @@ public class Buddy extends RDFParser {
 	public String getRole() { return this.getSingleNode("dive:role"); }
 	private String[] getDiverProfileURI() { return this.getSingleResourceNode("dive:seeDiverProfile", "rdf:resource").split("#"); }
 	
-	private String getExternProfileElement(String _nodeName) {
+	private String getExternProfileElement(String _nodeName, String _resourceName) {
 		String [] uri = this.getDiverProfileURI();
 		if ( uri.length > 1 ) {
 			if ( !uri[0].startsWith("/") )
@@ -39,9 +39,13 @@ public class Buddy extends RDFParser {
 			Document oldDocument = this.document;
 			try {
 				this.document = this.reader.read(profileFile);
-				List<Element> nodeList = this.getLinkNodes(prefix + "/" + _nodeName, this.namespace);
-				if ( nodeList.size() > 0 )
-					return nodeList.get(0).getTextTrim();
+				List<Element> nodeList = null;
+				if ( _resourceName == null ) {
+					nodeList = this.getLinkNodes(prefix + "/" + _nodeName, this.namespace);
+					if ( nodeList.size() > 0 )
+						return nodeList.get(0).getTextTrim();
+				} else
+					return this.getResourceLinkNodes(prefix + "/" + _nodeName, _resourceName, this.namespace);
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			} finally {
@@ -51,7 +55,10 @@ public class Buddy extends RDFParser {
 		return null;
 	}
 	
-	public String getName() { return this.getExternProfileElement("foaf:name"); }
-	public String getCertOrg() { return this.getExternProfileElement("dive:certorg"); }
-	public String getCertNr() { return this.getExternProfileElement("dive:certnr"); }
+	public String getName() { return this.getExternProfileElement("foaf:name", null); }
+	public String getEMail() { return this.getExternProfileElement("foaf:mbox", "rdf:resource"); }
+	public String getPhone() { return this.getExternProfileElement("foaf:phone", "rdf:resource"); }
+	public String getCertOrg() { return this.getExternProfileElement("dive:certorg", null); }
+	public String getCertNr() { return this.getExternProfileElement("dive:certnr", null); }
+	public String getCertDate() { return this.getExternProfileElement("dive:certdate", null); }
 }

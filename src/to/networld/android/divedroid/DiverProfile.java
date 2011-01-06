@@ -38,7 +38,12 @@ public class DiverProfile extends Activity {
 	private static final String ARROW = "nextArrow";
 
 	private static final String NAME = "Name";
+	private static final String EMAIL = "E-Mail";
+	private static final String PHONE = "Telephone Number";
 	private static final String ROLE = "Role";
+	private static final String CERTORG = "Certification Organisation";
+	private static final String CERTNR = "Certification Number";
+	private static final String CERTDATE = "Certification Date";
 
 	private ListView list;
 
@@ -111,15 +116,57 @@ public class DiverProfile extends Activity {
 				map.put(BOTTOM, agent.getName());
 				profileList.add(map);
 
-				/**
-				 * Scuba Dive Certificate
-				 */
 				String role = agent.getRole();
-				if (role != null) {
+				if ( role != null ) {
 					map = new HashMap<String, String>();
 					map.put(ICON, R.drawable.scuba_diver + "");
 					map.put(TOP, ROLE);
 					map.put(BOTTOM, role);
+					profileList.add(map);
+				}
+				
+				String certorg = agent.getCertOrg();
+				if ( certorg != null ) {
+					map = new HashMap<String, String>();
+					map.put(ICON, R.drawable.info_icon + "");
+					map.put(TOP, CERTORG);
+					map.put(BOTTOM, certorg);
+					profileList.add(map);
+				}
+				
+				String certnr = agent.getCertNr();
+				if ( certnr != null ) {
+					map = new HashMap<String, String>();
+					map.put(ICON, R.drawable.info_icon + "");
+					map.put(TOP, CERTNR);
+					map.put(BOTTOM, certnr);
+					profileList.add(map);
+				}
+				
+				String certdate = agent.getCertDate();
+				if ( certdate != null ) {
+					map = new HashMap<String, String>();
+					map.put(ICON, R.drawable.info_icon + "");
+					map.put(TOP, CERTDATE);
+					map.put(BOTTOM, certdate);
+					profileList.add(map);
+				}
+				
+				String email = agent.getEMail();
+				if ( email != null ) {
+					map = new HashMap<String, String>();
+					map.put(ICON, R.drawable.email_icon + "");
+					map.put(TOP, EMAIL);
+					map.put(BOTTOM, email);
+					profileList.add(map);
+				}
+				
+				String phone = agent.getPhone();
+				if ( email != null ) {
+					map = new HashMap<String, String>();
+					map.put(ICON, R.drawable.tel_icon + "");
+					map.put(TOP, PHONE);
+					map.put(BOTTOM, phone);
 					profileList.add(map);
 				}
 

@@ -3,10 +3,16 @@ package to.networld.android.divedroid;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import to.networld.android.divedroid.model.MediaHandler;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -23,6 +29,9 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class DiveDroid extends Activity {
     
+    private static final int MENU_SETTINGS = 0x0010;
+    private static final int MENU_ABOUT = 0x0020;
+	
 	private OnItemClickListener listClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> list, View view, int position, long id) {
@@ -53,7 +62,8 @@ public class DiveDroid extends Activity {
 		buttonList.add(map);
 
 		map = new HashMap<String, String>();
-		map.put("top", "Show Diver Information");
+		map.put("icon", R.drawable.scuba_diver + "");
+		map.put("top", "Diver Infos");
 		buttonList.add(map);
 		
 		SimpleAdapter adapterMainList = new SimpleAdapter(this, buttonList, 
@@ -68,7 +78,42 @@ public class DiveDroid extends Activity {
     }
     
     private void showDiverInformation() {
-    	Intent mapIntent = new Intent(DiveDroid.this, DiveCollectionList.class);
-    	this.startActivity(mapIntent);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());                                                                           
+        String diverFilename = settings.getString("Diver", "diver.rdf");
+        String diverNodeID = settings.getString("NodeID", "profile");
+    	MediaHandler mediaHandler = new MediaHandler();
+    	String diver = mediaHandler.getBuddyPath() + "/" + diverFilename;
+    	
+    	Intent intent = new Intent(DiveDroid.this, DiverProfile.class);
+		intent.putExtra("filename", diver);
+		intent.putExtra("nodeid", diverNodeID);
+		intent.putExtra("isbuddy", false);
+    	this.startActivity(intent);
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            menu.add(0, MENU_SETTINGS, 20, "Settings").setIcon(
+                            R.drawable.settings_icon);
+            menu.add(0, MENU_ABOUT, 30, "About").setIcon(R.drawable.about_icon);
+            return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+            case MENU_SETTINGS:
+                    Intent intent = new Intent(DiveDroid.this, Settings.class);
+                    this.startActivity(intent);
+                    return true;
+            case MENU_ABOUT:
+                    this.aboutDialog();
+                    return true;
+            }
+            return false;
+    }
+    
+    public void aboutDialog() {
+    }
+
 }

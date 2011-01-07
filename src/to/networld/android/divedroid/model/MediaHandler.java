@@ -11,6 +11,10 @@ import android.os.Environment;
  *
  */
 public class MediaHandler {
+
+	public static final String BUDDY_DIR = "/buddies";
+	public static final String SAT_PIC_DIR = "/sat_pic";
+	
 	boolean storageReadable = false;
 	boolean storageWriteable = false;
 	
@@ -36,6 +40,14 @@ public class MediaHandler {
 			return files;
 		else
 			return new File[0];
+	}
+	
+	public String getBuddyPath() {
+		this.checkAccess();
+		if ( !this.storageReadable)
+			return "";
+		File fd = new File(Environment.getExternalStorageDirectory(), "divedroid");
+		return fd.getAbsolutePath() + BUDDY_DIR;
 	}
 
 	public void checkAccess() {

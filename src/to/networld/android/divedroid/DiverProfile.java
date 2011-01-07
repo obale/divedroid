@@ -3,16 +3,19 @@ package to.networld.android.divedroid;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.dom4j.DocumentException;
+import java.util.Vector;
 
 import to.networld.android.divedroid.model.rdf.Buddy;
+import to.networld.android.divedroid.model.rdf.Diver;
+import to.networld.android.divedroid.model.rdf.Equipment;
+import to.networld.android.divedroid.model.rdf.IDiver;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -22,7 +25,7 @@ import android.widget.SimpleAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
- * Shows information about a dive buddy.
+ * Shows information about the diver.
  * 
  * @author Alex Oberhauser
  * 
@@ -30,7 +33,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class DiverProfile extends Activity {
 	private final Context context = DiverProfile.this;
 	
-	private Buddy agent;
+	private IDiver agent;
 	
 	private static final String BOTTOM = "bottom";
 	private static final String TOP = "top";
@@ -45,6 +48,9 @@ public class DiverProfile extends Activity {
 	private static final String CERTNR = "Certification Number";
 	private static final String CERTDATE = "Certification Date";
 
+	private static final String TOTAL_DIVES = "Total Dives";
+	private static final String EQUIPMENT = "Equipment";
+	
 	private ListView list;
 
 	private final Handler guiHandler = new Handler();
@@ -78,7 +84,16 @@ public class DiverProfile extends Activity {
 				eMailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
 						new String[] { entry.get(BOTTOM) });
 				startActivity(eMailIntent);
-
+			} else if ( entry.get(TOP).equals(EMAIL) ) {
+				final Intent eMailIntent = new Intent(android.content.Intent.ACTION_SEND);
+				eMailIntent.setType("text/html");
+				eMailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+						new String[] { entry.get(BOTTOM) });
+				startActivity(eMailIntent);
+			} else if ( entry.get(TOP).equals(PHONE) ) {
+				final Intent phoneIntent = new Intent(android.content.Intent.ACTION_DIAL);
+				phoneIntent.setData(Uri.parse(entry.get(BOTTOM)));
+				startActivity(phoneIntent);
 			}
 		}
 	};
@@ -92,10 +107,15 @@ public class DiverProfile extends Activity {
 		setContentView(R.layout.diverprofile);
 		String agentURL = getIntent().getStringExtra("filename");
 		String nodeID = getIntent().getStringExtra("nodeid");
+		final boolean isBuddy = getIntent().getBooleanExtra("isbuddy", true);
 		try {
-			agent = new Buddy(new File(agentURL), nodeID);
-		} catch (DocumentException e) {
+			if ( isBuddy )
+				agent = new Buddy(new File(agentURL), nodeID);
+			else 
+				agent = new Diver(new File(agentURL), nodeID);
+		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println("[***************] Error");
 			new GenericDialog(context, "Error", e.getLocalizedMessage(),
 					R.drawable.error_icon);
 		}
@@ -128,7 +148,7 @@ public class DiverProfile extends Activity {
 				String certorg = agent.getCertOrg();
 				if ( certorg != null ) {
 					map = new HashMap<String, String>();
-					map.put(ICON, R.drawable.info_icon + "");
+					map.put(ICON, R.drawable.certificate_icon + "");
 					map.put(TOP, CERTORG);
 					map.put(BOTTOM, certorg);
 					profileList.add(map);
@@ -137,7 +157,7 @@ public class DiverProfile extends Activity {
 				String certnr = agent.getCertNr();
 				if ( certnr != null ) {
 					map = new HashMap<String, String>();
-					map.put(ICON, R.drawable.info_icon + "");
+					map.put(ICON, R.drawable.certificate_icon + "");
 					map.put(TOP, CERTNR);
 					map.put(BOTTOM, certnr);
 					profileList.add(map);
@@ -146,7 +166,7 @@ public class DiverProfile extends Activity {
 				String certdate = agent.getCertDate();
 				if ( certdate != null ) {
 					map = new HashMap<String, String>();
-					map.put(ICON, R.drawable.info_icon + "");
+					map.put(ICON, R.drawable.certificate_icon + "");
 					map.put(TOP, CERTDATE);
 					map.put(BOTTOM, certdate);
 					profileList.add(map);
@@ -162,12 +182,35 @@ public class DiverProfile extends Activity {
 				}
 				
 				String phone = agent.getPhone();
-				if ( email != null ) {
+				if ( phone != null ) {
 					map = new HashMap<String, String>();
 					map.put(ICON, R.drawable.tel_icon + "");
 					map.put(TOP, PHONE);
 					map.put(BOTTOM, phone);
 					profileList.add(map);
+				}
+				
+				if ( !isBuddy ) {
+					Diver myself = (Diver)agent;
+					
+					String totalDives = myself.getTotalDives();
+					if ( totalDives != null ) {
+						map = new HashMap<String, String>();
+						map.put(ICON, R.drawable.info_icon + "");
+						map.put(TOP, TOTAL_DIVES);
+						map.put(BOTTOM, totalDives);
+						profileList.add(map);
+					}
+					
+					Vector<Equipment> equipment = myself.getEquipment();
+					for ( Equipment entry : equipment ) {
+						map = new HashMap<String, String>();
+						map.put(ICON, R.drawable.equipment_icon + "");
+						map.put(TOP, EQUIPMENT + ": " + entry.getType());
+						String name = entry.getBrand() + " - " + entry.getModel();
+						map.put(BOTTOM, name);
+						profileList.add(map);
+					}
 				}
 
 				guiHandler.post(updateProfile);

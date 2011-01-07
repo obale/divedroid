@@ -3,6 +3,7 @@ package to.networld.android.divedroid.model.rdf;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -75,6 +76,15 @@ public class RDFParser {
 			return nodeList.get(0).getTextTrim();
 		else
 			return null;
+	}
+	
+	protected Vector<String> getResourceNodes(String _nodeName, String _resourceName) {
+		List<Element> resourceList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName, this.namespace);
+		Vector<String> retVector = new Vector<String>();
+		for ( Element entry : resourceList ) {
+			retVector.add(entry.valueOf("@" + _resourceName));
+		}
+		return retVector;
 	}
 	
 	/**

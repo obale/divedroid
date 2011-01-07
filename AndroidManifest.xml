@@ -12,9 +12,13 @@
             </intent-filter>
         </activity>
         <uses-library android:name="com.google.android.maps" />
+        <activity android:name="org.achartengine.chartdemo.demo.chart.XYChartBuilder" />
+        <activity android:name="org.achartengine.GraphicalActivity" />
         <activity android:name=".DiveCollectionList" android:label="@string/collection_list"/>
  		<activity android:name=".DiveProfile" android:label="@string/dive_profile"/>
  		<activity android:name=".DiverProfile" android:label="@string/diver_profile"/>
+ 		<activity android:name=".Settings" android:label="@string/settings"/>
+ 		<activity android:name=".graphs.TemperatureGraph" android:label="@string/temp_graph"/>
     </application>
     <uses-sdk android:minSdkVersion="7" />
     

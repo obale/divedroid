@@ -7,12 +7,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
-public class Buddy extends RDFParser {
+public class Buddy extends RDFParser implements IDiver {
 	private String filename = null;
 	private String path = null;
 	private String nodeid = null;
 	
-	public Buddy(File _file, String _nodeID) throws DocumentException {
+	public Buddy(File _file, String _nodeID) throws Exception {
 		this.filename = _file.getAbsolutePath();
 		this.path = _file.getParent() + "/";
 		this.nodeid = _nodeID;
@@ -56,7 +56,15 @@ public class Buddy extends RDFParser {
 	}
 	
 	public String getName() { return this.getExternProfileElement("foaf:name", null); }
-	public String getEMail() { return this.getExternProfileElement("foaf:mbox", "rdf:resource"); }
+
+	public String getEMail() { 
+		String email = this.getExternProfileElement("foaf:mbox", "rdf:resource");
+		if ( email != null )
+			return email.replace("mailto:", "");
+		else
+			return null;
+	}
+	
 	public String getPhone() { return this.getExternProfileElement("foaf:phone", "rdf:resource"); }
 	public String getCertOrg() { return this.getExternProfileElement("dive:certorg", null); }
 	public String getCertNr() { return this.getExternProfileElement("dive:certnr", null); }

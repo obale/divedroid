@@ -58,7 +58,7 @@ public class Dive extends RDFParser {
 	public String getWaterType() { return this.getSingleNode("dive:watertype"); }
 	public String getWeight() { return this.getSingleNode("dive:weight"); }
 	public String getExposureProtection() { return this.getSingleNode("dive:exposureprotection"); }
-	public String getMaxDeep() { return this.getSingleNode("dive:maxdeep"); }
+	public String getMaxDeep() { return this.getSingleNode("dive:maxdepth"); }
 	public String getBottomTime() { return this.getSingleNode("dive:bottomtime"); }
 	public String getLatitude() { return this.getSingleNode("/geo:lat"); }
 	public String getLongitude() { return this.getSingleNode("/geo:long"); }
@@ -79,7 +79,7 @@ public class Dive extends RDFParser {
 			try {
 				Buddy buddy = new Buddy(new File(this.filename), buddyURI.replace("#", ""));
 				buddies.add(buddy);
-			} catch (DocumentException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
 			}

@@ -8,6 +8,8 @@ import java.util.Vector;
 import org.dom4j.DocumentException;
 
 import to.networld.android.divedroid.R;
+import to.networld.android.divedroid.graphs.DiveProfileGraph;
+import to.networld.android.divedroid.graphs.TemperaturePressureGraph;
 import to.networld.android.divedroid.model.ImageHelper;
 import to.networld.android.divedroid.model.rdf.Buddy;
 import to.networld.android.divedroid.model.rdf.Dive;
@@ -49,7 +51,11 @@ public class DiveProfile extends TabActivity {
 	private static final String ENTRANCE_TYPE = "Entrance Type";
 	private static final String TIME_DEEP = "Bottom Time and Max Deep";
 	
+	private static final String TEMPERATURE_PRESSURE = "Temperature/Pressure Graph";
+	private static final String DIVE_PROFILE = "Dive Profile";
+	
 	private ArrayList<HashMap<String, String>> infoList;
+	private ArrayList<HashMap<String, String>> graphList;
 	
 	private OnItemClickListener listClickListener = new OnItemClickListener() {
 		@Override
@@ -64,11 +70,29 @@ public class DiveProfile extends TabActivity {
 					return;
 			} else if ( entry.get(TOP).startsWith(BUDDY) ) {
 				Intent mapIntent = new Intent(DiveProfile.this, DiverProfile.class);
+				System.err.println("[*****] " + entry.get("hiddenFilename") + "#" + entry.get("hiddenNodeID"));
 				mapIntent.putExtra("filename", entry.get("hiddenFilename"));
 				mapIntent.putExtra("nodeid", entry.get("hiddenNodeID"));
 				startActivity(mapIntent);
 			} else if ( entry.get(TOP).equals(COMMENT) ) {
 				Toast.makeText(getApplicationContext(), dive.getComment(), Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	
+	private OnItemClickListener graphClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> list, View view, int position, long id) {
+			HashMap<String, String> entry = graphList.get(position);
+
+			if ( entry.get(TOP).contentEquals(TEMPERATURE_PRESSURE) ) {
+				TemperaturePressureGraph tempGraph = new TemperaturePressureGraph();
+				Intent intent = tempGraph.execute(DiveProfile.this);
+				startActivity(intent);
+			} else if ( entry.get(TOP).contentEquals(DIVE_PROFILE) ) {
+				DiveProfileGraph diveGraph = new DiveProfileGraph();
+				Intent intent = diveGraph.execute(DiveProfile.this);
+				startActivity(intent);
 			}
 		}
 	};
@@ -192,10 +216,29 @@ public class DiveProfile extends TabActivity {
 		}
 		
 		/**
-		 * TODO: Implement here a statistic of the dive (read out from a dive computer)
+		 * TODO: Implement here a statistic of the dive (__read out from a dive computer__)
 		 *       x-values ... the time
 		 *       y-values ... the deep
 		 */
-		//FrameLayout layout = (FrameLayout)findViewById(R.id.stat);
+		ListView layout = (ListView)findViewById(R.id.stat);
+		layout.setOnItemClickListener(this.graphClickListener);
+		this.graphList = new ArrayList<HashMap<String, String>>();
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(ICON, R.drawable.info_icon + "");
+		map.put(TOP, TEMPERATURE_PRESSURE);
+		map.put(BOTTOM, "Shows the water temperature and the tank pressure during the dive.");
+		this.graphList.add(map);
+		
+		map = new HashMap<String, String>();
+		map.put(ICON, R.drawable.info_icon + "");
+		map.put(TOP, DIVE_PROFILE);
+		map.put(BOTTOM, "Shows the dive profile (depth in relation to the time).");
+		this.graphList.add(map);
+		
+		SimpleAdapter adapterGraphList = new SimpleAdapter(this, graphList, 
+				R.layout.list_entry, new String[]{ ICON, TOP, BOTTOM },
+				new int[] { R.id.icon, R.id.topText, R.id.bottomText });
+		layout.setAdapter(adapterGraphList);
 	}
 }

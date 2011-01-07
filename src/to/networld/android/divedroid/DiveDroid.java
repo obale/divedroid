@@ -1,3 +1,23 @@
+/**
+ * DiveDroid
+ *
+ * Copyright (C) 2010-2011 by Networld Project
+ * Written by Alex Oberhauser <oberhauseralex@networld.to>
+ * All Rights Reserved
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software.  If not, see <http://www.gnu.org/licenses/>
+ */
+
 package to.networld.android.divedroid;
 
 import java.util.ArrayList;
@@ -6,15 +26,19 @@ import java.util.HashMap;
 import to.networld.android.divedroid.model.MediaHandler;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -114,6 +138,40 @@ public class DiveDroid extends Activity {
     }
     
     public void aboutDialog() {
+    	AlertDialog dialog = new AlertDialog.Builder(DiveDroid.this).create();
+		dialog.setTitle("About");
+
+		dialog.setButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
+
+		WebView wv = new WebView(this);
+		wv.setBackgroundColor(Color.GRAY);
+
+		StringBuffer strbuffer = new StringBuffer();
+		strbuffer.append("<small><font color='white'>");
+		strbuffer.append(this.getString(R.string.app_name) + " "
+				+ this.getString(R.string.version) + "<p/>");
+
+		strbuffer.append("<small>");
+		strbuffer.append("Please visit us at:<br/>");
+		strbuffer.append("<a href='http://networld.to'>http://networld.to</a></br>");
+		strbuffer.append("<a href='http://android.networld.to'>http://android.networld.to</a></br>");
+		strbuffer.append("<a href='http://divedroid.android.networld.to'>http://divedroid.android.networld.to</a><p/>");
+
+		strbuffer.append("<i>&copy; 2010-2011 by <a href='http://devnull.networld.to/foaf.rdf#me'>Alex Oberhauser</a></i> <br/>");
+		strbuffer.append("<i>licensed under the <a href='http://www.gnu.org/licenses/gpl-3.0.rdf'>GPL 3.0</a></i><p/>");
+		strbuffer.append("<a href='http://divedroid.android.networld.to'>DiveDroid</a> purpose is to bring the Semantic ");
+		strbuffer.append("Technolgy to mobile devices. With this application your are able to visualize your scuba dives ");
+		strbuffer.append("written in the <a href='http://scubadive.networld.to'>Scuba Dive Ontology</a>.");
+		strbuffer.append("</font></small>");
+		wv.loadData(strbuffer.toString(), "text/html", "utf-8");
+
+		dialog.setView(wv);
+		dialog.show();
     }
 
 }

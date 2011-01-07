@@ -8,4 +8,5 @@
 <string name="temp_graph">Temperature Graph</string>
 <string name="settings">General Settings</string>
 
+<string name="version">0.5</string>
 </resources>

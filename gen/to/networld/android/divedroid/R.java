@@ -70,6 +70,7 @@ public final class R {
         public static final int diver_profile=0x7f050003;
         public static final int settings=0x7f050005;
         public static final int temp_graph=0x7f050004;
+        public static final int version=0x7f050006;
     }
     public static final class xml {
         public static final int settings=0x7f040000;

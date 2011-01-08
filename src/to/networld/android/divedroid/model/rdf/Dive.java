@@ -69,7 +69,7 @@ public class Dive extends RDFParser {
 	}
 	
 	public String getActivity() { return this.getSingleNode("dive:activity"); }
-	public String getDate() { return this.getSingleNode("dive:date"); }
+	public String getDate() { return this.getSingleNode("dive:dateTime"); }
 	public String getDivesite() { return this.getSingleNode("dive:divesite"); }
 	public String getCountry() { return this.getSingleResourceNode("dive:country", "rdfs:label"); }
 	public String getLocation() { return this.getSingleNode("dive:location"); }

@@ -35,8 +35,12 @@ public final class R {
         public static final int sat_tabicon=0x7f020015;
         public static final int scuba_diver=0x7f020016;
         public static final int settings_icon=0x7f020017;
-        public static final int tel_icon=0x7f020018;
-        public static final int world_icon=0x7f020019;
+        public static final int ship_icon=0x7f020018;
+        public static final int tank_icon=0x7f020019;
+        public static final int tel_icon=0x7f02001a;
+        public static final int visibility_icon=0x7f02001b;
+        public static final int weather_icon=0x7f02001c;
+        public static final int world_icon=0x7f02001d;
     }
     public static final class id {
         public static final int MAIN=0x7f06000d;

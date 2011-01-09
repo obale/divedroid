@@ -69,13 +69,23 @@ public class Dive extends RDFParser {
 	public String getLocation() { return this.getSingleNode("dive:location"); }
 	public String getComment() { return this.getSingleNode("dive:comment"); }
 	public String getEntranceType() { return this.getSingleNode("dive:entrancetype"); }
+	public String getBoatName() { return this.getSingleNode("dive:boatname"); }
 	public String getWaterType() { return this.getSingleNode("dive:watertype"); }
 	public String getWeight() { return this.getSingleNode("dive:weight"); }
 	public String getExposureProtection() { return this.getSingleNode("dive:exposureprotection"); }
 	public String getMaxDepth() { return this.getSingleNode("dive:maxdepth"); }
 	public String getBottomTime() { return this.getSingleNode("dive:bottomtime"); }
+	
 	public String getLatitude() { return this.getSingleNode("/geo:lat"); }
 	public String getLongitude() { return this.getSingleNode("/geo:long"); }
+	
+	public String getScubaTankIn() { return this.getSingleNode("dive:scubatankin"); }
+	public String getScubaTankOut() { return this.getSingleNode("dive:scubatankout"); }
+	
+	public String getWaterVisibility() { return this.getSingleNode("dive:waterVisibility"); }
+	public String getAirTemperature() { return this.getSingleNode("dive:airTemperature"); }
+	public String getBottomTemperature() { return this.getSingleNode("dive:bottomTemperature"); }
+	public String getWeatherCondition() { return this.getSingleNode("dive:weatherCondition"); }
 	
 	public String getProfileLink() { return this.getSingleResourceNode("dive:seeDiveProfile", "rdf:resource"); }
 	

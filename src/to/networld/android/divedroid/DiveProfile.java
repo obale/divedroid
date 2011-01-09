@@ -50,7 +50,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView.ScaleType;
 
 /**
- * TODO: Visualize the detailed dive profile in a graph...
  * 
  * @author Alex Oberhauser
  *
@@ -70,8 +69,11 @@ public class DiveProfile extends TabActivity {
 	private static final String BUDDY = "Buddy";
 	private static final String DIVE_DATE = "Dive Date";
 	private static final String ENTRANCE_TYPE = "Entrance Type";
+	private static final String BOATNAME = "Boat Name";
+	private static final String WEATHER = "Weather Condition: ";
 	private static final String TIME_DEEP = "Bottom Time and Max Deep";
-	
+	private static final String TANK_IN_OUT = "Scuba Tank Pressure";
+	private static final String WATER_VISIBILITY = "Water Visibility";
 	private static final String TEMPERATURE_PRESSURE = "Temperature/Pressure Graph";
 	private static final String DIVE_PROFILE = "Dive Profile";
 	
@@ -192,6 +194,31 @@ public class DiveProfile extends TabActivity {
 				maxdepth = "--";
 			map.put(BOTTOM, bottomTime + " Minutes on maximum " + maxdepth + " meters.");
 			this.infoList.add(map);
+
+			String tankIN = this.dive.getScubaTankIn();
+			String tankOUT = this.dive.getScubaTankOut();
+			map = new HashMap<String, String>();
+			map.put(ICON, R.drawable.tank_icon + "");
+			map.put(TOP, TANK_IN_OUT);
+			String pressure = "";
+			if ( tankIN != null && !tankIN.equals("") )
+				pressure += "Start = " + tankIN + " bar, ";
+			if ( tankOUT != null && !tankOUT.equals("") )
+				pressure += "End = " + tankOUT + " bar";
+			if ( pressure.equals("") )
+				map.put(BOTTOM, "No tank pressure available!");
+			else
+				map.put(BOTTOM, pressure);
+			this.infoList.add(map);
+
+			String visibility = this.dive.getWaterVisibility();
+			if ( visibility != null && !visibility.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.visibility_icon + "");
+				map.put(TOP, WATER_VISIBILITY);
+				map.put(BOTTOM, visibility + " m");
+				this.infoList.add(map);
+			}
 			
 			String country = this.dive.getCountry();
 			if ( country != null && !country.equals("") ) {
@@ -214,6 +241,22 @@ public class DiveProfile extends TabActivity {
 			map.put(BOTTOM, "Divesite: " + divesite);
 			this.infoList.add(map);
 			
+			String weather = this.dive.getWeatherCondition();
+			if ( weather != null && !weather.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.weather_icon + "");
+				map.put(TOP, WEATHER + " " + weather);
+				String temperature = "Temperature :- ";
+				String airTemp = this.dive.getAirTemperature();
+				if ( airTemp != null && !airTemp.equals("") )
+					temperature += "Air = " + airTemp + " °C";
+				String bottomTemp = this.dive.getBottomTemperature();
+				if ( bottomTemp != null && !bottomTemp.equals("") )
+					temperature += ", Bottom = " + bottomTemp + " °C";
+				map.put(BOTTOM, temperature);
+				this.infoList.add(map);
+			}
+			
 			String exposureprotection = this.dive.getExposureProtection();
 			if ( exposureprotection != null && !exposureprotection.equals("") ) {
 				map = new HashMap<String, String>();
@@ -229,6 +272,15 @@ public class DiveProfile extends TabActivity {
 				map.put(ICON, R.drawable.entrancetype_icon + "");
 				map.put(TOP, ENTRANCE_TYPE);
 				map.put(BOTTOM, entrancetype);
+				this.infoList.add(map);
+			}
+			
+			String boatname = this.dive.getBoatName();
+			if ( boatname != null && !boatname.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.ship_icon + "");
+				map.put(TOP, BOATNAME);
+				map.put(BOTTOM, boatname);
 				this.infoList.add(map);
 			}
 			

@@ -37,7 +37,6 @@ public class Dive extends RDFParser {
 	private String path = null;
 	private String nodeid = null;
 	private int id = -1;
-	private String name = null;
 	
 	public Dive(File _file, String _nodeID) throws DocumentException {
 		super();
@@ -50,11 +49,10 @@ public class Dive extends RDFParser {
 		this.namespace.put("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
 		this.queryPrefix = "/rdf:RDF/dive:Dive[@rdf:ID='" + _nodeID + "']";
 		this.setID();
-		this.setName();
 	}
 	
 	private void setID() {
-		List<Element> ids = this.getLinkNodes(this.queryPrefix + "/dive:id", this.namespace);
+		List<Element> ids = this.getLinkNodes(this.queryPrefix + "/dive:id");
 		if ( ids.size() > 0 ) {
 			try {
 				this.id = new Integer(ids.get(0).getTextTrim());
@@ -64,12 +62,8 @@ public class Dive extends RDFParser {
 		}
 	}
 	
-	private void setName() {
-		this.name = this.getSingleNode("dive:name");
-	}
-	
 	public String getActivity() { return this.getSingleNode("dive:activity"); }
-	public String getDate() { return this.getSingleNode("dive:dateTime"); }
+	public String getDateTime() { return this.getSingleNode("dive:dateTime"); }
 	public String getDivesite() { return this.getSingleNode("dive:divesite"); }
 	public String getCountry() { return this.getSingleResourceNode("dive:country", "rdfs:label"); }
 	public String getLocation() { return this.getSingleNode("dive:location"); }
@@ -78,13 +72,16 @@ public class Dive extends RDFParser {
 	public String getWaterType() { return this.getSingleNode("dive:watertype"); }
 	public String getWeight() { return this.getSingleNode("dive:weight"); }
 	public String getExposureProtection() { return this.getSingleNode("dive:exposureprotection"); }
-	public String getMaxDeep() { return this.getSingleNode("dive:maxdepth"); }
+	public String getMaxDepth() { return this.getSingleNode("dive:maxdepth"); }
 	public String getBottomTime() { return this.getSingleNode("dive:bottomtime"); }
 	public String getLatitude() { return this.getSingleNode("/geo:lat"); }
 	public String getLongitude() { return this.getSingleNode("/geo:long"); }
 	
+	public String getProfileLink() { return this.getSingleResourceNode("dive:seeDiveProfile", "rdf:resource"); }
+	
 	public String getGeoImage() {
 		String geoImage = this.getSingleResourceNode("geo:image", "rdf:resource");
+		if ( geoImage == null ) return null;
 		if ( geoImage.startsWith("/"))
 			return geoImage;
 		else
@@ -93,7 +90,7 @@ public class Dive extends RDFParser {
 	
 	public Vector<Buddy> getBuddies() {
 		Vector<Buddy> buddies = new Vector<Buddy>();
-		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/dive:partner", this.namespace);
+		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/dive:partner");
 		for ( Element entry : nodeList ) {
 			String buddyURI = entry.valueOf("@rdf:resource");
 			try {
@@ -108,8 +105,9 @@ public class Dive extends RDFParser {
 	}
 	
 	public String getFilename() { return this.filename; }
+	public String getPath() { return this.path; }
 	public String getNodeID() { return this.nodeid; }
 	
 	public int getID() { return this.id; }
-	public String getName() { return this.name; }
+	public String getName() { return this.getSingleNode("dive:name"); }
 }

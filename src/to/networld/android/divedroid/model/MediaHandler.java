@@ -33,6 +33,7 @@ import android.os.Environment;
 public class MediaHandler {
 
 	public static final String BUDDY_DIR = "/buddies";
+	public static final String PROFILE_DIR = "/profiles";
 	public static final String SAT_PIC_DIR = "/sat_pic";
 	
 	boolean storageReadable = false;
@@ -68,6 +69,14 @@ public class MediaHandler {
 			return "";
 		File fd = new File(Environment.getExternalStorageDirectory(), "divedroid");
 		return fd.getAbsolutePath() + BUDDY_DIR;
+	}
+	
+	public String getProfilePath() {
+		this.checkAccess();
+		if ( !this.storageReadable )
+			return "";
+		File fd = new File(Environment.getExternalStorageDirectory(), "divedroid");
+		return fd.getAbsolutePath() + PROFILE_DIR;
 	}
 
 	public void checkAccess() {

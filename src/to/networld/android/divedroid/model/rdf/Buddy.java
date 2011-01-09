@@ -61,11 +61,11 @@ public class Buddy extends RDFParser implements IDiver {
 				this.document = this.reader.read(profileFile);
 				List<Element> nodeList = null;
 				if ( _resourceName == null ) {
-					nodeList = this.getLinkNodes(prefix + "/" + _nodeName, this.namespace);
+					nodeList = this.getLinkNodes(prefix + "/" + _nodeName);
 					if ( nodeList.size() > 0 )
 						return nodeList.get(0).getTextTrim();
 				} else
-					return this.getResourceLinkNodes(prefix + "/" + _nodeName, _resourceName, this.namespace);
+					return this.getResourceLinkNodes(prefix + "/" + _nodeName, _resourceName);
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			} finally {

@@ -57,6 +57,7 @@ import android.widget.ImageView.ScaleType;
  */
 public class DiveProfile extends TabActivity {
 	private Dive dive;
+	private String profileLink = null;
 	
 	private static final String ICON = "icon";
 	private static final String TOP = "top";
@@ -83,14 +84,17 @@ public class DiveProfile extends TabActivity {
 			HashMap<String, String> entry = infoList.get(position);
 
 			if ( entry.get(TOP).startsWith(LOCATION) ) {
+				String latitude = dive.getLatitude();
+				String longitude = dive.getLongitude();
+				if ( latitude != null && !latitude.equals("") &&
+						longitude != null && !longitude.equals("") ) {
 					final Intent mapIntent = new Intent(
 							android.content.Intent.ACTION_VIEW, 
-							Uri.parse("geo:" + dive.getLatitude() + "," + dive.getLongitude() + "?z=14"));
+							Uri.parse("geo:" + latitude + "," + longitude + "?z=14"));
 					startActivity(mapIntent);
-					return;
+				}
 			} else if ( entry.get(TOP).startsWith(BUDDY) ) {
 				Intent mapIntent = new Intent(DiveProfile.this, DiverProfile.class);
-				System.err.println("[*****] " + entry.get("hiddenFilename") + "#" + entry.get("hiddenNodeID"));
 				mapIntent.putExtra("filename", entry.get("hiddenFilename"));
 				mapIntent.putExtra("nodeid", entry.get("hiddenNodeID"));
 				startActivity(mapIntent);
@@ -106,13 +110,21 @@ public class DiveProfile extends TabActivity {
 			HashMap<String, String> entry = graphList.get(position);
 
 			if ( entry.get(TOP).contentEquals(TEMPERATURE_PRESSURE) ) {
-				TemperaturePressureGraph tempGraph = new TemperaturePressureGraph();
-				Intent intent = tempGraph.execute(DiveProfile.this);
-				startActivity(intent);
+				String[] linkParts = profileLink.split("#");
+				if ( linkParts.length > 1 ) {
+					TemperaturePressureGraph tempGraph = new TemperaturePressureGraph(new File(dive.getPath(), linkParts[0]), linkParts[1]);
+					Intent intent = tempGraph.execute(DiveProfile.this);
+					if ( intent != null )
+						startActivity(intent);
+				}
 			} else if ( entry.get(TOP).contentEquals(DIVE_PROFILE) ) {
-				DiveProfileGraph diveGraph = new DiveProfileGraph();
-				Intent intent = diveGraph.execute(DiveProfile.this);
-				startActivity(intent);
+				String[] linkParts = profileLink.split("#");
+				if ( linkParts.length > 1 ) {
+					DiveProfileGraph diveGraph = new DiveProfileGraph(new File(dive.getPath(), linkParts[0]), linkParts[1]);
+					Intent intent = diveGraph.execute(DiveProfile.this);
+					if ( intent != null )
+						startActivity(intent);
+				}
 			}
 		}
 	};
@@ -136,58 +148,92 @@ public class DiveProfile extends TabActivity {
         tabHost.setCurrentTab(0);
         
         try {
-	        String filename = getIntent().getStringExtra("filename");;
-	        String nodeID = getIntent().getStringExtra("nodeid");;
+	        String filename = getIntent().getStringExtra("filename");
+	        String nodeID = getIntent().getStringExtra("nodeid");
 			this.dive = new Dive(new File(filename), nodeID);
 			
 			ListView list = (ListView) findViewById(R.id.profileList);
 			list.setOnItemClickListener(this.listClickListener);
 			this.infoList = new ArrayList<HashMap<String, String>>();
 			
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.info_icon + "");
-			map.put(TOP, this.dive.getName());
-			map.put(BOTTOM, "Activity: " + this.dive.getActivity());
-			this.infoList.add(map);
+			HashMap<String, String> map;
+			
+			String activity = this.dive.getActivity();
+			if ( activity != null && !activity.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.info_icon + "");
+				map.put(TOP, this.dive.getName());
+				map.put(BOTTOM, "Activity: " + activity);
+				this.infoList.add(map);
+			}
 	
-			map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.cal_icon + "");
-			map.put(TOP, DIVE_DATE);
-			map.put(BOTTOM, this.dive.getDate());
-			this.infoList.add(map);
+			String dateTime = this.dive.getDateTime();
+			if ( dateTime != null && !dateTime.equals("") ) {
+				String[] dateTimeEntries = dateTime.split("T");
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.cal_icon + "");
+				map.put(TOP, DIVE_DATE);
+				if ( dateTimeEntries.length > 1 ) {
+					map.put(BOTTOM, dateTimeEntries[0] + " at " + dateTimeEntries[1]);
+				} else {
+					map.put(BOTTOM, dateTimeEntries[0]);
+				}
+				this.infoList.add(map);
+			}
 			
 			map = new HashMap<String, String>();
 			map.put(ICON, R.drawable.bottomtime_icon + "");
 			map.put(TOP, TIME_DEEP);
-			map.put(BOTTOM, this.dive.getBottomTime() + " Minutes on maximum " + this.dive.getMaxDeep() + " meters.");
+			String bottomTime = this.dive.getBottomTime();
+			if ( bottomTime == null || bottomTime.equals("") )
+				bottomTime = "--";
+			String maxdepth = this.dive.getMaxDepth();
+			if ( maxdepth == null || maxdepth.equals("") )
+				maxdepth = "--";
+			map.put(BOTTOM, bottomTime + " Minutes on maximum " + maxdepth + " meters.");
 			this.infoList.add(map);
 			
-			map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.world_icon + "");
-			map.put(TOP, COUNTRY);
-			map.put(BOTTOM, this.dive.getCountry());
-			this.infoList.add(map);
+			String country = this.dive.getCountry();
+			if ( country != null && !country.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.world_icon + "");
+				map.put(TOP, COUNTRY);
+				map.put(BOTTOM, country);
+				this.infoList.add(map);
+			}
 			
 			map = new HashMap<String, String>();
 			map.put(ICON, R.drawable.location_icon + "");
-			map.put(TOP, LOCATION + ": " + this.dive.getLocation());
-			map.put(BOTTOM, "Divesite: " + this.dive.getDivesite());
+			String location = this.dive.getLocation();
+			if ( location == null || location.equals("") )
+				location = "unknown";
+			map.put(TOP, LOCATION + ": " + location);
+			String divesite = this.dive.getDivesite();
+			if ( divesite == null || divesite.equals("") )
+				divesite = "unknown";
+			map.put(BOTTOM, "Divesite: " + divesite);
 			this.infoList.add(map);
 			
-			map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.exposuretype_icon + "");
-			map.put(TOP, EXPOSURE_TYPE);
-			map.put(BOTTOM, this.dive.getExposureProtection());
-			this.infoList.add(map);
+			String exposureprotection = this.dive.getExposureProtection();
+			if ( exposureprotection != null && !exposureprotection.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.exposuretype_icon + "");
+				map.put(TOP, EXPOSURE_TYPE);
+				map.put(BOTTOM, exposureprotection);
+				this.infoList.add(map);
+			}
 			
-			map = new HashMap<String, String>();
-			map.put(ICON, R.drawable.entrancetype_icon + "");
-			map.put(TOP, ENTRANCE_TYPE);
-			map.put(BOTTOM, this.dive.getEntranceType());
-			this.infoList.add(map);
+			String entrancetype = this.dive.getEntranceType();
+			if ( entrancetype != null && !entrancetype.equals("") ) {
+				map = new HashMap<String, String>();
+				map.put(ICON, R.drawable.entrancetype_icon + "");
+				map.put(TOP, ENTRANCE_TYPE);
+				map.put(BOTTOM, entrancetype);
+				this.infoList.add(map);
+			}
 			
 			String comment = this.dive.getComment();
-			if ( comment != null ) {
+			if ( comment != null && !comment.equals("") ) {
 				map = new HashMap<String, String>();
 				map.put(ICON, R.drawable.comment_icon + "");
 				map.put(TOP, COMMENT);
@@ -232,29 +278,31 @@ public class DiveProfile extends TabActivity {
 				ImageView geoPicView = (ImageView)findViewById(R.id.geoPicture);
 				geoPicView.setImageDrawable(ImageHelper.rotateImage(image));
 				geoPicView.setScaleType(ScaleType.CENTER_INSIDE);
-			} catch (NullPointerException e) { }
+			} catch (Exception e) { }
 		}
 		
-		/**
-		 * TODO: Implement here a statistic of the dive (__read out from a dive computer__)
-		 *       x-values ... the time
-		 *       y-values ... the deep
+		/*
+		 * Diagram Tab
 		 */
 		ListView layout = (ListView)findViewById(R.id.stat);
 		layout.setOnItemClickListener(this.graphClickListener);
 		this.graphList = new ArrayList<HashMap<String, String>>();
 		
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(ICON, R.drawable.info_icon + "");
-		map.put(TOP, TEMPERATURE_PRESSURE);
-		map.put(BOTTOM, "Shows the water temperature and the tank pressure during the dive.");
-		this.graphList.add(map);
-		
-		map = new HashMap<String, String>();
-		map.put(ICON, R.drawable.info_icon + "");
-		map.put(TOP, DIVE_PROFILE);
-		map.put(BOTTOM, "Shows the dive profile (depth in relation to the time).");
-		this.graphList.add(map);
+		profileLink = this.dive.getProfileLink();
+		if ( profileLink != null ) {
+			HashMap<String, String> map = new HashMap<String, String>();
+
+			map.put(ICON, R.drawable.diveprofile_icon + "");
+			map.put(TOP, DIVE_PROFILE);
+			map.put(BOTTOM, "Shows the dive profile (depth in relation to the time).");
+			this.graphList.add(map);
+			
+			map = new HashMap<String, String>();
+			map.put(ICON, R.drawable.graph_icon + "");
+			map.put(TOP, TEMPERATURE_PRESSURE);
+			map.put(BOTTOM, "Shows the water temperature and the tank pressure during the dive.");
+			this.graphList.add(map);
+		}
 		
 		SimpleAdapter adapterGraphList = new SimpleAdapter(this, graphList, 
 				R.layout.list_entry, new String[]{ ICON, TOP, BOTTOM },

@@ -21,13 +21,10 @@
 package to.networld.android.divedroid.model;
 
 import java.io.File;
-import java.util.List;
 import java.util.Vector;
 
 import org.dom4j.DocumentException;
-import org.dom4j.Element;
 
-import to.networld.android.divedroid.model.rdf.Dive;
 import to.networld.android.divedroid.model.rdf.DiveCollection;
 import to.networld.android.divedroid.model.rdf.RDFParser;
 
@@ -49,31 +46,16 @@ public class DiveCollectionHandler extends RDFParser {
 	}
 	
 	public boolean addDiveCollection(File _file) {
-		String filepath = _file.getAbsolutePath();
-		DiveCollection diveCollection = new DiveCollection(filepath);
 		try {
-			this.document = this.reader.read(_file);
-			
-			diveCollection.setDiveBase(this.getSingleNode("dive:divebase"));
-			diveCollection.setStartDate(this.getSingleNode("dive:startDate"));
-			diveCollection.setStopDate(this.getSingleNode("dive:stopDate"));
-			diveCollection.setCountry(this.getSingleResourceNode("dive:country", "resource"));
-			diveCollection.setLatitude(new Double(this.getSingleNode("/geo:lat")));
-			diveCollection.setLongitude(new Double(this.getSingleNode("/geo:long")));
-			
-			List<Element> dives = this.getLinkNodes("/rdf:RDF/dive:DiveCollection/dive:dive", this.namespace);
-			for ( Element dive : dives ) {
-				Dive diveObj = new Dive(new File(filepath), dive.valueOf("@rdf:resource").replace("#", ""));
-				if ( diveObj != null )
-					diveCollection.addDive(diveObj);
+			DiveCollection diveCollection = new DiveCollection(_file);
+			if ( diveCollection.isCollection() ) {
+				this.collections.add(diveCollection);
+				return true;
 			}
-			
-			this.collections.add(diveCollection);
-			return true;
 		} catch (DocumentException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return false;
 	}
 	
 	public Vector<DiveCollection> getDiveCollections() { return this.collections; }

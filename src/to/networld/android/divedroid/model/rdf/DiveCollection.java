@@ -20,7 +20,12 @@
 
 package to.networld.android.divedroid.model.rdf;
 
+import java.io.File;
+import java.util.List;
 import java.util.Vector;
+
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 /**
  * Models a RDF dive collection as described in:
@@ -29,84 +34,73 @@ import java.util.Vector;
  * @author Alex Oberhauser
  *
  */
-public class DiveCollection {
+public class DiveCollection extends RDFParser {
 	private final static String FACTBOOK_PREFIX = "http://www4.wiwiss.fu-berlin.de/factbook/data/";
-	
-	private String uri;
-	private String factbookURI = null;
-	
-	/**
-	 * @see http://scubadive.networld.to/dive.rdf#startDate
-	 */
-	private String startDate;
-	
-	/**
-	 * @see http://scubadive.networld.to/dive.rdf#stopDate
-	 */
-	private String stopDate;
-	
-	/**
-	 * @see http://scubadive.networld.to/dive.rdf#divebase
-	 */
-	private String diveBase;
-	
-	/**
-	 * @see http://scubadive.networld.to/dive.rdf#country
-	 */
-	private String country;
-	
-	private double latitude;
-	private double longitude;
-	
-	/**
-	 * @see http://scubadive.networld.to/dive.rdf#dive
-	 */
-	private final Vector<Dive> dives = new Vector<Dive>();
-	
-	public DiveCollection(String _uri) {
-		this.uri = _uri;
+	private final File file;
+	public DiveCollection(File _file) throws DocumentException {
+		super();
+		this.file = _file;
+		this.document = this.reader.read(_file);
+		this.namespace.put("dive", "http://scubadive.networld.to/dive.rdf#");
+		this.namespace.put("foaf", "http://xmlns.com/foaf/0.1/");
+		this.namespace.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		this.namespace.put("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
+		this.queryPrefix = "/rdf:RDF/dive:DiveCollection";
 	}
 	
-	public void setStartDate(String _startDate) {
-		this.startDate = _startDate;
+	public boolean isCollection() {
+		List<Element> dives = this.getLinkNodes(this.queryPrefix + "/dive:dive");
+		if ( dives.size() > 0 )
+			return true;
+		return false;
 	}
 	
-	public void setStopDate(String _stopDate) {
-		this.stopDate = _stopDate;
-	}
+	public String getID() { return this.getSingleResourceNode(".", "rdf:ID"); }
 	
-	public void setDiveBase(String _diveBase) {
-		this.diveBase = _diveBase;
-	}
-	
-	public void setLatitude(double _latitude) {
-		this.latitude = _latitude;
-	}
-	
-	public void setLongitude(double _longitude) {
-		this.longitude = _longitude;
-	}
-	
-	public void setCountry(String _country) {
-		if ( _country.startsWith(FACTBOOK_PREFIX) ) {
-			this.factbookURI = _country;
-			this.country = _country.substring(FACTBOOK_PREFIX.length());
-		} else {
-			this.country = _country;
+	public Vector<Dive> getDives() {
+		Vector<Dive> diveElements = new Vector<Dive>();
+		List<Element> dives = this.getLinkNodes(this.queryPrefix + "/dive:dive");
+		for ( Element dive : dives ) {
+			try {
+				Dive diveObj = new Dive(this.file, dive.valueOf("@rdf:resource").replace("#", ""));
+				diveElements.add(diveObj);
+			} catch (DocumentException e) {
+				e.printStackTrace();
+				break;
+			}
 		}
+		return diveElements;
 	}
 	
-	public void addDive(Dive _dive) {
-		this.dives.add(_dive);
+	public String getStartDate() { return this.getSingleNode("dive:startDate"); }
+	public String getStopDate() { return this.getSingleNode("dive:stopDate"); }
+	
+	public String getDiveBase() { return this.getSingleNode("dive:divebase"); }
+	
+	public String getLatitude() { return this.getSingleNode("/geo:lat"); }
+	public String getLongitude() { return this.getSingleNode("/geo:long"); }
+	
+	public String getCountry() {
+		String country = this.getSingleResourceNode("dive:country", "rdfs:label");
+		if ( country != null && !country.equals("") )
+			return country;
+		
+		country = this.getSingleResourceNode("dive:country", "rdf:resource");
+		if ( country == null )
+			return null;
+		else if ( country.startsWith(FACTBOOK_PREFIX) )
+			return country.substring(FACTBOOK_PREFIX.length());
+		else
+			return country;
 	}
 	
-	public String getURI() { return this.uri; }
-	public String getStartDate() { return this.startDate; }
-	public String getStopDate() { return this.stopDate; }
-	public String getDiveBase() { return this.diveBase; }
-	public double getLatitude() { return this.latitude; }
-	public double getLongitude() { return this.longitude; }
-	public String getCountry() { return this.country; }
-	public String getFactbookURI() { return this.factbookURI; }
-	public Vector<Dive> getDives() { return this.dives; }
+	public String getFactbookURI() {
+		String factbookURI = this.getSingleResourceNode("dive:country", "resource");
+		if ( factbookURI == null )
+			return null;
+		else if ( factbookURI.startsWith(FACTBOOK_PREFIX) )
+			return factbookURI;
+		else
+			return null;
+	}
 }

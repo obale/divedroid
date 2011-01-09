@@ -95,8 +95,12 @@ public class DiveCollectionList extends MapActivity {
 				if ( dive.getName() != null ) {
 					items[count] = dive.getName() + "\n- " + dive.getActivity() + " -";
 					count++;
+				} else {
+					items[count] = "Dive #" + count;
+					count++;
 				}
 			}
+			
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int item) {
                     Intent profileIntent = new Intent(DiveCollectionList.this, DiveProfile.class);
@@ -167,19 +171,26 @@ public class DiveCollectionList extends MapActivity {
 		for ( DiveCollection entry : collections ) {
 			map = new HashMap<String, String>();
 			map.put(ICON, R.drawable.logbook + "");
-			map.put(TOP, entry.getDiveBase());
+			String divebase = entry.getDiveBase();
+			if ( divebase == null || divebase.equals("") )
+				divebase = "Collection: " + entry.getID();
+			map.put(TOP, divebase);
 			map.put(BOTTOM, entry.getCountry() + " (" + entry.getStartDate() + " - " + entry.getStopDate() + ")");
 			map.put(ARROW, R.drawable.right_arrow_icon + "");
 			collectionList.add(map);	
 			
-			double latDouble = entry.getLatitude();
-			double lonDouble = entry.getLongitude();
-			if ( latDouble != 0.0 && lonDouble != 0.0 ) {
-				int lat = (int) (latDouble * 1E6);
-				int lon = (int) (lonDouble * 1E6);
-				GeoPoint geo = new GeoPoint(lat, lon);
-		        OverlayItem overlayitem = new OverlayItem(geo, entry.getCountry(), "");
-		        this.collectionOverlay.addOverlay(overlayitem);   
+			try {
+				double latDouble = new Double(entry.getLatitude());
+				double lonDouble = new Double(entry.getLongitude());
+				if ( latDouble != 0.0 && lonDouble != 0.0 ) {
+					int lat = (int) (latDouble * 1E6);
+					int lon = (int) (lonDouble * 1E6);
+					GeoPoint geo = new GeoPoint(lat, lon);
+					OverlayItem overlayitem = new OverlayItem(geo, entry.getCountry(), "");
+					this.collectionOverlay.addOverlay(overlayitem);   
+				}
+			} catch (Exception e) {
+				// No GPS coordinates, no icon on the map...
 			}
 		}
 		

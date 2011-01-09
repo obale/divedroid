@@ -59,10 +59,10 @@ public class RDFParser {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected List<Element> getLinkNodes(String _query, HashMap<String, String> _namespaces) {
+	protected List<Element> getLinkNodes(String _query) {
 		try {
 			XPath xpath = new Dom4jXPath(_query);
-			xpath.setNamespaceContext(new SimpleNamespaceContext(_namespaces));
+			xpath.setNamespaceContext(new SimpleNamespaceContext(this.namespace));
 			return (List<Element>) xpath.selectNodes(this.document);
 		} catch (JaxenException e) {
 			e.printStackTrace();
@@ -71,10 +71,10 @@ public class RDFParser {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected String getResourceLinkNodes(String _query, String _resource, HashMap<String, String> _namespaces) {
+	protected String getResourceLinkNodes(String _query, String _resource) {
 		try {
 			XPath xpath = new Dom4jXPath(_query);
-			xpath.setNamespaceContext(new SimpleNamespaceContext(_namespaces));
+			xpath.setNamespaceContext(new SimpleNamespaceContext(this.namespace));
 			List<Element> elements = (List<Element>)xpath.selectNodes(this.document);
 			if ( elements.size() > 0 )
 				return elements.get(0).attributeValue(new QName("resource", new Namespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")));
@@ -91,7 +91,7 @@ public class RDFParser {
 	 * @return
 	 */
 	protected String getSingleNode(String _nodeName) {
-		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName, this.namespace);
+		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName);
 		if ( nodeList.size() > 0 )
 			return nodeList.get(0).getTextTrim();
 		else
@@ -99,7 +99,7 @@ public class RDFParser {
 	}
 	
 	protected Vector<String> getResourceNodes(String _nodeName, String _resourceName) {
-		List<Element> resourceList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName, this.namespace);
+		List<Element> resourceList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName);
 		Vector<String> retVector = new Vector<String>();
 		for ( Element entry : resourceList ) {
 			retVector.add(entry.valueOf("@" + _resourceName));
@@ -114,7 +114,7 @@ public class RDFParser {
 	 * @return
 	 */
 	protected String getSingleResourceNode(String _nodeName, String _resourceName) {
-		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName, this.namespace);
+		List<Element> nodeList = this.getLinkNodes(this.queryPrefix + "/" + _nodeName);
 		if ( nodeList.size() > 0 )
 			return nodeList.get(0).valueOf("@" + _resourceName);
 		else

@@ -129,8 +129,10 @@ public class DiverProfile extends Activity {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("[***************] Error");
+			progressDialog.dismiss();
 			new GenericDialog(context, "Error", e.getLocalizedMessage(),
 					R.drawable.error_icon);
+			return;
 		}
 
 		this.list = (ListView) findViewById(R.id.profileList);

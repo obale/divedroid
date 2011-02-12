@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/alert_dialog_root"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:padding="10dp"
+              >
+              
+    	<LinearLayout 
+    		android:orientation="horizontal"
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent">
+    		<ImageView android:id="@+id/alert_image"
+            	android:layout_width="wrap_content"
+               	android:layout_height="wrap_content"
+               	android:layout_marginRight="5dp"/>
+    		<TextView android:id="@+id/alert_msg"
+              	android:layout_width="fill_parent"
+              	android:layout_height="wrap_content"
+              	android:textColor="#FFF"/>
+        </LinearLayout>
+    	
+ 		<Button android:id="@+id/alert_ok"
+ 			android:layout_width="fill_parent"
+ 			android:layout_height="wrap_content"
+ 			android:text="OK"/>
+ 	
+</LinearLayout>

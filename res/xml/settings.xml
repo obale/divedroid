@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <PreferenceCategory android:title="Diver Settings">
+                <EditTextPreference
+                        android:name="Diver"
+                        android:summary="Please enter here the name of the diver filename (same as file under $app_path/buddies/)"
+                        android:defaultValue="diver.rdf"
+                        android:title="Diver File Name"
+                        android:key="Diver" />
+                <EditTextPreference
+                        android:name="NodeID"
+                        android:summary="Please enter here the identifier of the dive node (value of rdf:ID)"
+                        android:defaultValue="profile"
+                        android:title="Diver Node Identifier"
+                        android:key="NodeID" />
+        </PreferenceCategory>
+</PreferenceScreen>

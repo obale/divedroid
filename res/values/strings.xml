@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">DiveDroid</string>
+<string name="collection_list">Dive Collection List</string>
+<string name="dive_profile">Dive Profile</string>
+<string name="diver_profile">Diver Profile</string>
+<string name="temp_graph">Temperature Graph</string>
+<string name="settings">General Settings</string>
+
+<string name="version">0.5</string>
+</resources>

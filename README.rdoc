@@ -5,6 +5,11 @@ Used Ontology: http://scubadive.networld.to/
 = Screenshots
 
 {<img src="https://raw.github.com/obale/divedroid/master/screenshots/startpage.jpg" />}[http://scubadive.networld.to]
+{<img src="https://raw.github.com/obale/divedroid/master/screenshots/dive_collections.jpg" />}[http://scubadive.networld.to]
+{<img src="https://raw.github.com/obale/divedroid/master/screenshots/single_dive_dive_profile.jpg" />}[http://scubadive.networld.to]
+{<img src="https://raw.github.com/obale/divedroid/master/screenshots/single_dive.jpg" />}[http://scubadive.networld.to]
+{<img src="https://raw.github.com/obale/divedroid/master/screenshots/single_dive_temperature_graph.jpg" />}[http://scubadive.networld.to]
+{<img src="https://raw.github.com/obale/divedroid/master/screenshots/single_dive_graph_selection.jpg" />}[http://scubadive.networld.to]
 
 
 == License

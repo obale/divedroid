@@ -4,7 +4,7 @@ Used Ontology: http://scubadive.networld.to/
 
 = Screenshots
 
-link:screenshots/startpage.jpg
+link:divedroid/screenshots/startpage.jpg
 
 
 == License
